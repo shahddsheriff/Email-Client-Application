@@ -13,19 +13,19 @@ def send_email(sender_email, password, recipient_email, subject, body):
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
 
-        server = smtplib.SMTP('smtp.gmail.com', 587) #creates a connection to Gmail's SMTP server on port 587
-        server.starttls()  #starts TLS connection for 
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT) #creates a connection to Gmail's SMTP server on port 587
+        server.starttls()  #starts the TLS encryption
         server.login(sender_email, password)  
         server.sendmail(sender_email, recipient_email, msg.as_string())
         server.quit()
-        print("Email sent successfully!")
-    except Exception as e:
-        print(f"Error sending email: {e}")
 
-if __name__ == "__main__":
-    sender_email = "shahddsheriff@gmail.com"
-    password = "znqd vhtb jlon tmke"
-    recipient_email = "shahddsheriff@gmail.com"
-    subject = "Test Email"
-    body = "This is a test email sent from Python."
-    send_email(sender_email, password, recipient_email, subject, body)
+        return "Email sent successfully!"
+
+    except smtplib.SMTPAuthenticationError:
+        return "Error: Incorrect email or password."
+    except smtplib.SMTPRecipientsRefused:
+        return "Error: Invalid recipient email address."
+    except smtplib.SMTPException as e:
+        return f"SMTP Error: {e}"
+    except Exception as e:
+        return f"Unexpected Error: {e}"
